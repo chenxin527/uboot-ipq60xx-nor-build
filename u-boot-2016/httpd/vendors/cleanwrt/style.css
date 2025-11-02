@@ -35,7 +35,7 @@ h1 {
     /* font-size: 2.5rem; */
     color: #0999c5;
     margin-bottom: 20px;
-    padding-bottom: 15px;
+    padding-bottom: 20px;
     border-bottom: 2px solid rgba(255, 255, 255, 0.1);
     text-align: center;
     font-weight: 700;
@@ -137,13 +137,13 @@ a:hover {
 
 .main-content {
     flex-grow: 1;
-    padding: 30px;
+    padding: 35px;
     overflow-y: auto;
     background: linear-gradient(180deg, #2c3e50 0%, #1a2530 100%);
 }
 
 .container {
-    max-width: 900px;
+    max-width: 1000px;
     margin: 0 auto;
     /* background: linear-gradient(180deg, #2c3e50 0%, #1a2530 100%); */
     /* background: rgba(255, 255, 255, 0.05); */
@@ -154,7 +154,7 @@ a:hover {
 }
 
 form {
-    padding: 25px 0px;
+    padding: 10px 0px;
     margin: 25px 0;
     text-align: center;
 }
@@ -199,7 +199,7 @@ input[type="submit"]:hover {
     border-left: 4px solid #FFC107;
     padding: 25px;
     border-radius: 8px;
-    margin: 25px 0;
+    margin: 25px 15px;
     text-align: left;
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
     color: #fefdce;
@@ -208,8 +208,8 @@ input[type="submit"]:hover {
 .warning-box strong {
     color: #ffd54f;
     display: block;
-    margin-bottom: 15px;
-    font-size: 1.2rem;
+    /* margin-bottom: 15px; */
+    font-size: 1.1rem;
 }
 
 .warning-box ul {
@@ -224,7 +224,7 @@ input[type="submit"]:hover {
 }
 
 .error-container {
-    max-width: 900px;
+    max-width: 1000px;
     margin: 0 auto;
     /* background: rgba(255, 255, 255, 0.05); */
     border-radius: 12px;
@@ -250,7 +250,7 @@ input[type="submit"]:hover {
     border-left: 4px solid #e74c3c;
     padding: 25px;
     border-radius: 8px;
-    margin: 25px 0;
+    margin: 40px 0;
     text-align: left;
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
     color: #ffcccc;
@@ -268,7 +268,7 @@ input[type="submit"]:hover {
     border-left: 4px solid #e74c3c;
     padding: 25px;
     border-radius: 8px;
-    margin: 25px 0;
+    margin: 40px 0;
     text-align: center;
     box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
     color: #ffcccc;
@@ -282,7 +282,7 @@ input[type="submit"]:hover {
 
 .page-footer {
     text-align: center;
-    margin-top: 30px;
+    margin-top: 40px;
     margin-bottom: -30px;
     padding-top: 20px;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
