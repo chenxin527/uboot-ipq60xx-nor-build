@@ -58,7 +58,11 @@ Fork 本仓库后使用 GitHub Actions 云编译。
 
 ## 文件说明
 
-编译生成的 U-Boot 文件：uboot-ipq60xx-emmc-\${设备型号}-\${版本号}.bin
+编译生成文件所在目录：bin/
+
+日志文件：log-\${编译时间}.txt
+
+U-Boot 文件：uboot-ipq60xx-emmc-\${设备型号}-\${版本号}.bin
 
 U-Boot 截图示例（[点击此处](./screenshots.md) 查看所有网页截图）：
 
