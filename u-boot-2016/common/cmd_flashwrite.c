@@ -33,45 +33,64 @@ extern struct sdhci_host mmc_host;
 
 #define SMEM_PTN_NAME_MAX     16
 
-static int write_to_flash(int flash_type, uint32_t address, uint32_t offset,
-uint32_t part_size, uint32_t file_size, char *layout)
+#define FLASH 1
+#define FLASH_ERASE 2
+#define FLASH_UPDATE 3
+
+static int write_to_flash(int flash_cmd, int flash_type, uint32_t address,
+uint32_t offset,uint32_t part_size, uint32_t file_size, char *layout)
 {
 
 	char runcmd[256];
 	int nand_dev = CONFIG_NAND_FLASH_INFO_IDX;
 
-	if (flash_type == SMEM_BOOT_NAND_FLASH) {
+	switch (flash_cmd) {
+		case FLASH:
+			if (flash_type == SMEM_BOOT_NAND_FLASH) {
 
-		snprintf(runcmd, sizeof(runcmd), "nand device %d && ", nand_dev);
+				snprintf(runcmd, sizeof(runcmd), "nand device %d && ", nand_dev);
 
-		if (strcmp(layout, "default") != 0) {
+				if (strcmp(layout, "default") != 0) {
 
-			snprintf(runcmd + strlen(runcmd), sizeof(runcmd),
-						"ipq_nand %s && ", layout);
-		}
+					snprintf(runcmd + strlen(runcmd), sizeof(runcmd),
+								"ipq_nand %s && ", layout);
+				}
 
-		snprintf(runcmd + strlen(runcmd), sizeof(runcmd),
-			"nand erase 0x%x 0x%x && "
-			"nand write 0x%x 0x%x 0x%x && ",
-			offset, part_size,
-			address, offset, file_size);
+				snprintf(runcmd + strlen(runcmd), sizeof(runcmd),
+					"nand erase 0x%x 0x%x && "
+					"nand write 0x%x 0x%x 0x%x && ",
+					offset, part_size,
+					address, offset, file_size);
 
-	} else if (flash_type == SMEM_BOOT_MMC_FLASH) {
+			} else if (flash_type == SMEM_BOOT_MMC_FLASH) {
 
-		snprintf(runcmd, sizeof(runcmd),
-			"mmc erase 0x%x 0x%x && "
-			"mmc write 0x%x 0x%x 0x%x && ",
-			offset, part_size,
-			address, offset, file_size);
+				snprintf(runcmd, sizeof(runcmd),
+					"mmc erase 0x%x 0x%x && "
+					"mmc write 0x%x 0x%x 0x%x && ",
+					offset, part_size,
+					address, offset, file_size);
 
-	} else if (flash_type == SMEM_BOOT_SPI_FLASH) {
+			} else if (flash_type == SMEM_BOOT_SPI_FLASH) {
 
-		snprintf(runcmd, sizeof(runcmd),
-			"sf probe && "
-			"sf erase 0x%x 0x%x && "
-			"sf write 0x%x 0x%x 0x%x && ",
-			offset, part_size,
-			address, offset, file_size);
+				snprintf(runcmd, sizeof(runcmd),
+					"sf probe && "
+					"sf erase 0x%x 0x%x && "
+					"sf write 0x%x 0x%x 0x%x && ",
+					offset, part_size,
+					address, offset, file_size);
+			}
+			break;
+		case FLASH_UPDATE:
+			if (flash_type == SMEM_BOOT_SPI_FLASH) {
+
+				snprintf(runcmd, sizeof(runcmd),
+					"sf probe && "
+					"sf update 0x%x 0x%x 0x%x && ",
+					address, offset, file_size);
+			}
+			break;
+		default:
+			return CMD_RET_FAILURE;
 	}
 
 	if (run_command(runcmd, 0) != CMD_RET_SUCCESS)
@@ -181,7 +200,8 @@ char * const argv[])
 	uint32_t offset, part_size, adj_size;
 	uint32_t load_addr = 0;
 	uint32_t file_size = 0;
-	uint32_t size_block, start_block, file_size_cpy;
+	uint32_t size_block, start_block;
+	uint32_t file_size_cpy = 0;
 	char *part_name = NULL, *filesize, *loadaddr;
 	int flash_type, ret, retn;
 	unsigned int active_part = 0;
@@ -202,38 +222,50 @@ char * const argv[])
 	qca_smem_flash_info_t *sfi = &qca_smem_flash_info;
 	nand_info_t *nand = &nand_info[CONFIG_NAND_FLASH_INFO_IDX];
 
-	if (strcmp(argv[0], "flash") == 0)
-		flash_cmd = 1;
-
-	if (flash_cmd) {
-		if ((argc < 2) || (argc > 4))
-			return CMD_RET_USAGE;
-
-		if (argc == 2) {
-			loadaddr = getenv("fileaddr");
-			if (loadaddr != NULL)
-				load_addr = simple_strtoul(loadaddr, NULL, 16);
-			else
-				return CMD_RET_USAGE;
-
-			filesize = getenv("filesize");
-			if (filesize != NULL)
-				file_size = simple_strtoul(filesize, NULL, 16);
-			else
-				return CMD_RET_USAGE;
-
-		} else if (argc == 4) {
-			load_addr = simple_strtoul(argv[2], NULL, 16);
-			file_size = simple_strtoul(argv[3], NULL, 16);
-
-		} else
-			return CMD_RET_USAGE;
-
-		file_size_cpy = file_size;
+	if (strcmp(argv[0], "flash") == 0) {
+		flash_cmd = FLASH;
+	} else if (strcmp(argv[0], "flasherase") == 0) {
+		flash_cmd = FLASH_ERASE;
+	} else if (strcmp(argv[0], "flashupdate") == 0) {
+		flash_cmd = FLASH_UPDATE;
+	} else {
+		return CMD_RET_FAILURE;
 	}
-	else {
-		if (argc != 2)
-			return CMD_RET_USAGE;
+
+	switch (flash_cmd) {
+		case FLASH:
+		case FLASH_UPDATE:
+			if ((argc < 2) || (argc > 4))
+				return CMD_RET_USAGE;
+
+			if (argc == 2) {
+				loadaddr = getenv("fileaddr");
+				if (loadaddr != NULL)
+					load_addr = simple_strtoul(loadaddr, NULL, 16);
+				else
+					return CMD_RET_USAGE;
+
+				filesize = getenv("filesize");
+				if (filesize != NULL)
+					file_size = simple_strtoul(filesize, NULL, 16);
+				else
+					return CMD_RET_USAGE;
+
+			} else if (argc == 4) {
+				load_addr = simple_strtoul(argv[2], NULL, 16);
+				file_size = simple_strtoul(argv[3], NULL, 16);
+
+			} else
+				return CMD_RET_USAGE;
+
+			file_size_cpy = file_size;
+			break;
+		case FLASH_ERASE:
+			if (argc != 2)
+				return CMD_RET_USAGE;
+			break;
+		default:
+			return CMD_RET_FAILURE;
 	}
 
 	flash_type = sfi->flash_type;
@@ -346,34 +378,51 @@ char * const argv[])
 		}
 	}
 
-	if (flash_cmd) {
-
-		if (flash_type == SMEM_BOOT_NAND_FLASH) {
-
-			adj_size = file_size % nand->writesize;
-			if (adj_size)
-				file_size = file_size + (nand->writesize - adj_size);
-		}
-
-		if (flash_type == SMEM_BOOT_MMC_FLASH) {
-
-			if (disk_info.blksz) {
-				file_size = file_size / disk_info.blksz;
-				adj_size = file_size_cpy % disk_info.blksz;
+	switch (flash_cmd) {
+		case FLASH:
+			if (flash_type == SMEM_BOOT_NAND_FLASH) {
+				adj_size = file_size % nand->writesize;
 				if (adj_size)
-					file_size = file_size + 1;
+					file_size = file_size + (nand->writesize - adj_size);
 			}
-		}
 
-		if (file_size > part_size) {
-			printf("Image size is greater than partition memory\n");
+			if (flash_type == SMEM_BOOT_MMC_FLASH) {
+				if (disk_info.blksz) {
+					file_size = file_size / disk_info.blksz;
+					adj_size = file_size_cpy % disk_info.blksz;
+					if (adj_size)
+						file_size = file_size + 1;
+				}
+			}
+
+			if (file_size > part_size) {
+				printf("Image size is greater than partition memory\n");
+				return CMD_RET_FAILURE;
+			}
+
+			ret = write_to_flash(flash_cmd, flash_type, load_addr, offset,
+								part_size, file_size, layout);
+			break;
+		case FLASH_UPDATE:
+			if (flash_type == SMEM_BOOT_NAND_FLASH || flash_type == SMEM_BOOT_MMC_FLASH) {
+				printf("This command ONLY works for partition on SPI FLASH!\n");
+				return CMD_RET_FAILURE;
+			}
+
+			if (file_size > part_size) {
+				printf("Image size is greater than partition memory\n");
+				return CMD_RET_FAILURE;
+			}
+
+			ret = write_to_flash(flash_cmd, flash_type, load_addr, offset,
+								part_size, file_size, layout);
+			break;
+		case FLASH_ERASE:
+			ret = fl_erase(flash_type, offset, part_size, layout);
+			break;
+		default:
 			return CMD_RET_FAILURE;
-		}
-
-		ret = write_to_flash(flash_type, load_addr, offset, part_size,
-							file_size, layout);
-	} else
-		ret = fl_erase(flash_type, offset, part_size, layout);
+	}
 
 return ret;
 }
@@ -387,6 +436,13 @@ U_BOOT_CMD(
 
 U_BOOT_CMD(
 	flasherase,       4,      0,      do_flash,
-	"flerase part_name \n",
+	"flasherase part_name \n",
 	"erases on flash the given partition \n"
+);
+
+U_BOOT_CMD(
+	flashupdate,       4,      0,      do_flash,
+	"flashupdate part_name \n"
+	"\tflashupdate part_name load_addr file_size \n",
+	"flashupdate the image at load_addr, given file_size in hex. FOR SPI FLASH ONLY.\n"
 );

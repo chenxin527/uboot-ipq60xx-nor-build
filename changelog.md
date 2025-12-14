@@ -6,6 +6,7 @@
 
 - 添加对飞利浦 LY1800 和双渔 Y6010 的支持
 - 调整相关代码，适配 NOR + eMMC
+- 添加 flashupdate 命令
 - 雅典娜支持通过 Screen 键启动 HTTP Server
 
 #### 🐛 BUG 修复
