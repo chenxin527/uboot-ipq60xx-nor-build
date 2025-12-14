@@ -120,7 +120,7 @@ int do_http_upgrade(const ulong size, const int upgrade_type){
 				sprintf(buf,
 					"mw 0x%lx 0x00 0x200 && "
 					"mmc dev 0 && flash 0:HLOS 0x%lx 0x%lx && flash rootfs 0x%lx 0x%lx && "
-					"sf probe && sf read 0x%lx 0xd0000 0x150 && mw.b 0x%lx 0x00 0x1 && mw.b 0x%lx 0x00 0x1 && mw.b 0x%lx 0x00 0x1 && flash 0:BOOTCONFIG 0x%lx 0x150 && flash 0:BOOTCONFIG1 0x%lx 0x150",
+					"sf probe && sf read 0x%lx 0xd0000 0x150 && mw.b 0x%lx 0x00 0x1 && mw.b 0x%lx 0x00 0x1 && mw.b 0x%lx 0x00 0x1 && flashupdate 0:BOOTCONFIG 0x%lx 0x150 && flashupdate 0:BOOTCONFIG1 0x%lx 0x150",
 					//mw 0x%lx 0x00 0x200 擦除内存中上传文件后面的512字节，防止文件不够512字节写入文件后其他字符到EMMC
 					//其实测试不擦除文件后内存，写入一些其他字符也可以正常启动
 					(unsigned long int)(WEBFAILSAFE_UPLOAD_RAM_ADDRESS+size),
@@ -141,7 +141,7 @@ int do_http_upgrade(const ulong size, const int upgrade_type){
 				sprintf(buf,
 					"mw 0x%lx 0x00 0x200 && "
 					"mmc dev 0 && flash 0:HLOS 0x%lx 0x%lx && flash rootfs 0x%lx 0x%lx && "
-					"sf probe && sf read 0x%lx 0xd0000 0x150 && mw.b 0x%lx 0x00 0x1 && mw.b 0x%lx 0x00 0x1 && mw.b 0x%lx 0x00 0x1 && flash 0:BOOTCONFIG 0x%lx 0x150 && flash 0:BOOTCONFIG1 0x%lx 0x150",
+					"sf probe && sf read 0x%lx 0xd0000 0x150 && mw.b 0x%lx 0x00 0x1 && mw.b 0x%lx 0x00 0x1 && mw.b 0x%lx 0x00 0x1 && flashupdate 0:BOOTCONFIG 0x%lx 0x150 && flashupdate 0:BOOTCONFIG1 0x%lx 0x150",
 					//mw 0x%lx 0x00 0x200 擦除内存中上传文件后面的512字节，防止文件不够512字节写入文件后其他字符到EMMC
 					//其实测试不擦除文件后内存，写入一些其他字符也可以正常启动
 					(unsigned long int)(WEBFAILSAFE_UPLOAD_RAM_ADDRESS+size),
@@ -161,7 +161,7 @@ int do_http_upgrade(const ulong size, const int upgrade_type){
 				printf("\n\n*******************************\n* Original FIRMWARE UPGRADING *\n*   DO NOT POWER OFF DEVICE!  *\n*******************************\n\n");
 				sprintf(buf,
 					"imxtract 0x%lx hlos-0cc33b23252699d495d79a843032498bfa593aba && mmc dev 0 && flash 0:HLOS $fileaddr $filesize && imxtract 0x%lx rootfs-f3c50b484767661151cfb641e2622703e45020fe && flash rootfs $fileaddr $filesize && imxtract 0x%lx wififw-45b62ade000c18bfeeb23ae30e5a6811eac05e2f && flash 0:WIFIFW $fileaddr $filesize && flasherase rootfs_data && "
-					"sf probe && sf read 0x%lx 0xd0000 0x150 && mw.b 0x%lx 0x00 0x1 && mw.b 0x%lx 0x00 0x1 && mw.b 0x%lx 0x00 0x1 && flash 0:BOOTCONFIG 0x%lx 0x150 && flash 0:BOOTCONFIG1 0x%lx 0x150",
+					"sf probe && sf read 0x%lx 0xd0000 0x150 && mw.b 0x%lx 0x00 0x1 && mw.b 0x%lx 0x00 0x1 && mw.b 0x%lx 0x00 0x1 && flashupdate 0:BOOTCONFIG 0x%lx 0x150 && flashupdate 0:BOOTCONFIG1 0x%lx 0x150",
 					//官方固件本身各个固件后面有填充0，所以不用修改上传文件后的内存
 					//执行imxtract时不带目标地址，则不进行复制，但会修改环境变量$fileaddr $filesize，可以直接用
 					(unsigned long int)WEBFAILSAFE_UPLOAD_RAM_ADDRESS,
@@ -187,7 +187,7 @@ int do_http_upgrade(const ulong size, const int upgrade_type){
 		if (flash_type == SMEM_BOOT_NORPLUSEMMC || sfi->flash_type == SMEM_BOOT_SPI_FLASH) {
 			if (check_fw_type((void *)WEBFAILSAFE_UPLOAD_RAM_ADDRESS)==FW_TYPE_ELF) {
 			sprintf(buf,
-				"sf probe && flash 0:APPSBL 0x%lx $filesize && flash 0:APPSBL_1 0x%lx $filesize",
+				"sf probe && flashupdate 0:APPSBL 0x%lx $filesize && flashupdate 0:APPSBL_1 0x%lx $filesize",
 				(unsigned long int)(WEBFAILSAFE_UPLOAD_RAM_ADDRESS),
 				(unsigned long int)(WEBFAILSAFE_UPLOAD_RAM_ADDRESS));
 			} else {
@@ -202,7 +202,7 @@ int do_http_upgrade(const ulong size, const int upgrade_type){
 		printf("\n\n****************************\n*      ART  UPGRADING      *\n* DO NOT POWER OFF DEVICE! *\n****************************\n\n");
 		if (flash_type == SMEM_BOOT_NORPLUSEMMC || sfi->flash_type == SMEM_BOOT_SPI_FLASH) {
 			sprintf(buf,
-				"sf probe && flash 0:ART 0x%lx $filesize",
+				"sf probe && flashupdate 0:ART 0x%lx $filesize",
 				(unsigned long int)(WEBFAILSAFE_UPLOAD_RAM_ADDRESS));
 		} else {
 			printf("\n\n* Update ART is NOT supported for this FLASH TYPE yet!! *\n\n");
@@ -230,7 +230,7 @@ int do_http_upgrade(const ulong size, const int upgrade_type){
 		if (flash_type == SMEM_BOOT_NORPLUSEMMC || sfi->flash_type == SMEM_BOOT_SPI_FLASH) {
 			if (check_fw_type((void *)WEBFAILSAFE_UPLOAD_RAM_ADDRESS)==FW_TYPE_CDT) {
 			sprintf(buf,
-				"sf probe && flash 0:CDT 0x%lx $filesize && flash 0:CDT_1 0x%lx $filesize",
+				"sf probe && flashupdate 0:CDT 0x%lx $filesize && flashupdate 0:CDT_1 0x%lx $filesize",
 				(unsigned long int)(WEBFAILSAFE_UPLOAD_RAM_ADDRESS),
 				(unsigned long int)(WEBFAILSAFE_UPLOAD_RAM_ADDRESS));
 			} else {
