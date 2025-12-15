@@ -303,7 +303,7 @@ int do_http_progress(const int state){
 			led_off("power_led");
 			led_off("blink_led");
 			led_on("system_led");
-			printf("HTTP ugrade is done! Rebooting...\n\n");
+			printf("HTTP upgrade is done! Rebooting...\n\n");
 			mdelay(3000);
 			break;
 
@@ -311,7 +311,7 @@ int do_http_progress(const int state){
 			led_on("power_led");
 			led_off("blink_led");
 			led_off("system_led");
-			printf("## Error: HTTP ugrade failed!\n\n");
+			printf("## Error: HTTP upgrade failed!\n\n");
 			// // blink LED fast for 4 sec
 			// for(i = 0; i < 80; ++i){
 			// 	all_led_on();
