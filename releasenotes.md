@@ -20,6 +20,7 @@
 - 修改 bootcmd 为 bootipq（[点击此处](https://github.com/chenxin527/uboot-ipq60xx-nor-build/commit/b1682e34c931779f1f46ff4d210777e9b1256f1a) 查看详细说明）
 - 修改 smeminfo 命令的输出内容
 - 针对 SPI-NOR 修改 CDT 大小限制为 64KB (65536 Bytes)
+- 检查上传的文件是否正确，不正确则返回 fail.html，并在串口控制台打印相关信息
 
 ## 📡 支持设备
 
