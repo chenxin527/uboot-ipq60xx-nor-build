@@ -79,7 +79,7 @@
     <div class="main-content">
         <div class="container">
             <h1>IMG 更新</h1>
-            <p>此页面用于路由器的<strong> GPT (GUID Partition Table) 分区表或 eMMC 镜像（从 GPT 分区表开始）</strong>更新。<br>请选择要更新的文件并点击 <strong>更新 IMG</strong> 按钮。</p>
+            <p>此页面用于路由器的<strong> eMMC IMG (GPT 或 完整镜像) / SPI-NOR IMG (MIBIB 或 完整镜像)</strong>更新。<br>请选择要更新的文件并点击 <strong>更新 IMG</strong> 按钮。</p>
 
             <form method="post" enctype="multipart/form-data">
                 <input type="file" name="img" required>
@@ -90,6 +90,7 @@
                 <strong>提醒：</strong>
                 <ul>
                     <li><strong>更新 IMG 是一个十分危险的操作，可能导致你的路由器无法启动！</strong></li>
+                    <li><strong>支持刷写 eMMC 的 GPT 分区表或镜像，以及 SPI-NOR 的 MIBIB 分区表或镜像！</strong></li>
                     <li>在更新期间不要断开路由器的电源，如果更新顺利，设备将自动重启！</li>
                     <li>你可以上传任何你想要上传的文件，所以一定要为你的设备选择合适的 IMG 文件！</li>
                 </ul>

@@ -55,8 +55,11 @@ void check_button_is_press(void);
 #define WEBFAILSAFE_UPLOAD_ART_BIG_SIZE_IN_BYTES        (512*1024)
 #define WEBFAILSAFE_UPLOAD_CDT_SIZE_IN_BYTES            (256*1024)
 
+#define WEBFAILSAFE_UPLOAD_MIBIB_SIZE_IN_BYTES_NOR      (64*1024)
+
 #define WEBFAILSAFE_UPLOAD_UBOOT_SIZE_IN_BYTES_NAND     (1536*1024)
 #define WEBFAILSAFE_UPLOAD_ART_SIZE_IN_BYTES_NAND       (512*1024)
+#define WEBFAILSAFE_UPLOAD_MIBIB_SIZE_IN_BYTES_NAND     (1024*1024)
 
 #define FW_TYPE_NOR 0
 #define FW_TYPE_EMMC 1
@@ -67,6 +70,7 @@ void check_button_is_press(void);
 #define FW_TYPE_FACTORY_KERNEL6M 6
 #define FW_TYPE_FACTORY_KERNEL12M 7
 #define FW_TYPE_FIT 8
+#define FW_TYPE_MIBIB 9
 
 int check_test(void);
 int check_config(void);

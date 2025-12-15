@@ -278,6 +278,8 @@ int check_fw_type(void *address){
 	u32 *sign_elf=(u32 *)address;
 	u32 *sign_kernel6m=(u32 *)(address+0x600000);
 	u32 *sign_kernel12m=(u32 *)(address+0xc00000);
+	u64 *sign_mibib_only=(u64 *)(address);
+	u64 *sign_mibib_in_nor=(u64 *)(address+0xc0000);
 
 	if (*sign_flas==0x73616c46)
 		return FW_TYPE_QSDK;
@@ -293,6 +295,10 @@ int check_fw_type(void *address){
 		return FW_TYPE_EMMC;
 	else if (*sign_cdt==0x00544443)
 		return FW_TYPE_CDT;
+	else if (*sign_mibib_only==0xcd7f127afe569fac)
+		return FW_TYPE_MIBIB;
+	else if (*sign_elf==0x464c457f && *sign_mibib_in_nor==0xcd7f127afe569fac)
+		return FW_TYPE_NOR;
 	else if (*sign_elf==0x464c457f)
 		return FW_TYPE_ELF;
 	else

@@ -634,13 +634,20 @@ void httpd_appcall(void){
 
 					// if we have collected all data
 					if(hs->upload >= hs->upload_total+strlen(boundary_value)+6){
+						// 因为要检查文件头，所以需等待文件上传完成
+						if(webfailsafe_upgrade_type == WEBFAILSAFE_UPGRADE_TYPE_IMG) {
+							if ((check_fw_type((void *)WEBFAILSAFE_UPLOAD_RAM_ADDRESS)==FW_TYPE_MIBIB) && (hs->upload_total > WEBFAILSAFE_UPLOAD_MIBIB_SIZE_IN_BYTES_NOR)) {
+								printf("\n\n## Error: wrong file size, should be less than or equal to: %d bytes!", WEBFAILSAFE_UPLOAD_MIBIB_SIZE_IN_BYTES_NOR);
+								webfailsafe_upload_failed = 1;
+								file_too_big = 1;
+							}
+						}
 
 						printf("\n\ndone!\n");
 						led_on("blink_led");
 
 						// end of post upload
 						webfailsafe_post_done = 1;
-
 
 						net_boot_file_size = (ulong)hs->upload_total;
 

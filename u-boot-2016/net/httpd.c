@@ -212,13 +212,23 @@ int do_http_upgrade(const ulong size, const int upgrade_type){
 		printf("\n\n****************************\n*      IMG  UPGRADING      *\n* DO NOT POWER OFF DEVICE! *\n****************************\n\n");
 		if (flash_type == SMEM_BOOT_NORPLUSEMMC || (sfi->flash_type == SMEM_BOOT_SPI_FLASH && sfi->flash_secondary_type == SMEM_BOOT_MMC_FLASH)) {
 			if (check_fw_type((void *)WEBFAILSAFE_UPLOAD_RAM_ADDRESS)==FW_TYPE_EMMC) {
-			sprintf(buf,
-				"mmc dev 0 && mmc erase 0x0 0x%lx && mmc write 0x%lx 0x0 0x%lx",
-				(unsigned long int)((size-1)/512+1),
-				(unsigned long int)WEBFAILSAFE_UPLOAD_RAM_ADDRESS,
-				(unsigned long int)((size-1)/512+1));
+				sprintf(buf,
+					"mmc dev 0 && mmc erase 0x0 0x%lx && mmc write 0x%lx 0x0 0x%lx",
+					(unsigned long int)((size-1)/512+1),
+					(unsigned long int)WEBFAILSAFE_UPLOAD_RAM_ADDRESS,
+					(unsigned long int)((size-1)/512+1));
+			} else if (check_fw_type((void *)WEBFAILSAFE_UPLOAD_RAM_ADDRESS)==FW_TYPE_NOR) {
+				sprintf(buf,
+					"sf probe && sf update 0x%lx 0x0 0x%lx",
+					(unsigned long int)WEBFAILSAFE_UPLOAD_RAM_ADDRESS,
+					(unsigned long int)(size));
+			} else if (check_fw_type((void *)WEBFAILSAFE_UPLOAD_RAM_ADDRESS)==FW_TYPE_MIBIB) {
+				sprintf(buf,
+					"sf probe && sf update 0x%lx 0xc0000 0x%lx",
+					(unsigned long int)WEBFAILSAFE_UPLOAD_RAM_ADDRESS,
+					(unsigned long int)(size));
 			} else {
-				printf("\n\n* The upload file is NOT supported EMMC IMG!! *\n\n");
+				printf("\n\n* The upload file is NOT supported EMMC IMG / NOR IMG!! *\n\n");
 				return(-1);
 			}
 		} else {

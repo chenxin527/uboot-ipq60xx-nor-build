@@ -173,7 +173,7 @@ U-Boot 截图示例（[点击此处](./screenshots.md) 查看所有网页截图�
 | 更新固件     | http://192.168.1.1             | 支持内核大小为 6MB 和 12MB 的固件更新 |
 | 更新 ART    | http://192.168.1.1/art.html    | ART 包含路由器网卡 MAC 及无线校准数据 |
 | 更新 CDT    | http://192.168.1.1/cdt.html    | CDT 文件不得小于 10KB（10240 Bytes） |
-| 更新 IMG    | http://192.168.1.1/img.html    | 可更新 GPT 分区表或者 eMMC IMG 镜像 |
+| 更新 IMG    | http://192.168.1.1/img.html    | 支持刷写 eMMC 的 GPT 分区表或镜像，以及 SPI-NOR 的 MIBIB 分区表或镜像 |
 | 更新 U-Boot | http://192.168.1.1/uboot.html  | U-Boot 大小不能超过 640KB（655360 Bytes）|
 | 启动 uImage | http://192.168.1.1/uimage.html | Initramfs uImage，可直接上传至内存并启动 |
 
@@ -191,11 +191,11 @@ U-Boot 截图示例（[点击此处](./screenshots.md) 查看所有网页截图�
 
 ### 固件说明
 
-双渔 Y6010 / 龙渊 LY1800 除了支持刷写各自的专用固件，还支持刷写京东云亚瑟的固件。
+双渔 Y6010 / 飞利浦 LY1800 除了支持刷写各自的专用固件，还支持刷写京东云亚瑟的固件。
 
 因为亚瑟的固件未包含 NOR 的驱动，无法从 NOR 中读取 ART 分区，所以若要刷写亚瑟的固件，需将 ART 分区复制到 eMMC 上。
 
-方法：将亚瑟的分区表刷到 eMMC 上，再将双渔 Y6010 / 龙渊 LY1800 的原机 ART 刷到 eMMC 的 ART 分区即可。
+方法：将亚瑟的分区表刷到 eMMC 上，再将双渔 Y6010 / 飞利浦 LY1800 的原机 ART 刷到 eMMC 的 ART 分区即可。
 
 此外，刷写亚瑟固件后无法直接在 SSH 下操作 U-Boot 环境变量，需刷写专用固件或通过 TTL 在串口控制台中修改。
 
