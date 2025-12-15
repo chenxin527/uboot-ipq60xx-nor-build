@@ -682,6 +682,8 @@ void httpd_appcall(void){
 									webfailsafe_upload_failed = 1;
 								}
 								break;
+							case WEBFAILSAFE_UPGRADE_TYPE_ART:
+								break;
 							default:
 								printf("\n\n* NOT supported WEBFAILSAFE UPGRADE TYPE!! *");
 								webfailsafe_upload_failed = 1;
