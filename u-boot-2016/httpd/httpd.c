@@ -270,10 +270,10 @@ static int httpd_findandstore_firstchunk(void){
 				// CDT
 				}
 				else if((webfailsafe_upgrade_type == WEBFAILSAFE_UPGRADE_TYPE_CDT)
-						&& (hs->upload_total > WEBFAILSAFE_UPLOAD_CDT_SIZE_IN_BYTES)
+						&& (hs->upload_total > WEBFAILSAFE_UPLOAD_CDT_SIZE_IN_BYTES_NOR)
 						){
 
-					printf("## Error: wrong file size, should be less than or equal to: %d bytes!\n", WEBFAILSAFE_UPLOAD_CDT_SIZE_IN_BYTES);
+					printf("## Error: wrong file size, should be less than or equal to: %d bytes!\n", WEBFAILSAFE_UPLOAD_CDT_SIZE_IN_BYTES_NOR);
 					webfailsafe_upload_failed = 1;
 					file_too_big = 1;
 
