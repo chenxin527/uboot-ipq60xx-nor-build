@@ -62,6 +62,7 @@ void check_button_is_press(void);
 #define WEBFAILSAFE_UPLOAD_ART_SIZE_IN_BYTES_NAND       (512*1024)
 #define WEBFAILSAFE_UPLOAD_MIBIB_SIZE_IN_BYTES_NAND     (1024*1024)
 
+#define FW_TYPE_UNKNOWN -1
 #define FW_TYPE_NOR 0
 #define FW_TYPE_EMMC 1
 #define FW_TYPE_QSDK 2
@@ -77,6 +78,7 @@ int check_test(void);
 int check_config(void);
 int auto_update_by_tftp(void);
 int check_fw_type(void *address);
+void print_fw_type(int fw_type);
 void led_toggle(const char *gpio_name);
 void led_on(const char *gpio_name);
 void led_off(const char *gpio_name);

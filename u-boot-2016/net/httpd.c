@@ -258,7 +258,7 @@ int do_http_upgrade(const ulong size, const int upgrade_type){
 				"bootm 0x%lx",
 				(unsigned long int)(WEBFAILSAFE_UPLOAD_RAM_ADDRESS));
 		} else {
-			printf("\n\n* The upload file is NOT supported uImage!! *\n\n");
+			printf("\n\n* The upload file is NOT supported FIT uImage!! *\n\n");
 			return(-1);
 		}
 	} else {
