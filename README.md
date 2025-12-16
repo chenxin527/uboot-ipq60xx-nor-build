@@ -8,8 +8,8 @@ u-boot-2016 源代码基于：https://github.com/gl-inet/uboot-ipq60xx
 
 本项目已适配以下 IPQ60xx **NOR + eMMC** 机型：
 
-- 双渔 Y6010
 - 飞利浦 LY1800
+- 双渔 Y6010
 
 以下机型可硬改为 **NOR + eMMC**（未测试）：
 - 京东云太乙（RE-CS-07）

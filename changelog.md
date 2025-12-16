@@ -21,6 +21,7 @@
 - 修改 smeminfo 命令的输出内容
 - 针对 SPI-NOR 修改 CDT 大小限制为 64KB (65536 Bytes)
 - 检查上传的文件是否正确，不正确则返回 fail.html，并在串口控制台打印相关信息
+- 调整文件上传前填充的内存区域大小，文件上传完成后填充文件之后一定大小的内存区域
 
 ### 📅 [25.11.13](https://github.com/chenxin527/uboot-ipq60xx-emmc-build/releases/tag/25.11.13-22.43.36)
 
