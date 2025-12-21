@@ -96,7 +96,7 @@ check_and_pad_file() {
     fi
 
     local current_size_bytes=$(stat -c%s "$file_path")
-    local target_size_bytes=655360  # 640KB = 655360 Bytes
+    local target_size_bytes=655360  # 640 KB = 655360 Bytes
 
     log_message "文件检查: $target_name"
     log_message "文    件: $(basename "$file_path")"
@@ -277,7 +277,7 @@ show_help() {
     echo "选项:"
     echo "  help                    显示此帮助信息"
     echo "  setup_env               仅设置编译环境"
-	echo "  check_file_size <文件>  检查并调整文件大小至 640KB (655360 Bytes)"
+	echo "  check_file_size <文件>  检查并调整文件大小至 640 KB (655360 Bytes)"
     echo "  clean_cache             清理编译过程中产生的缓存"
     echo "  build_ly1800            编译 Philips LY1800"
     echo "  build_y6010             编译 SY Y6010"

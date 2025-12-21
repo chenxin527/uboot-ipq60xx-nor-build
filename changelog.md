@@ -6,6 +6,10 @@
 
 - 添加 bootconfig 命令，用于切换启动分区
 
+#### 📢 其他更新
+
+- 调整文件上传完成后内存填充的起始地址，改用 0 填充内存
+
 ### 📅 [25.12.16](https://github.com/chenxin527/uboot-ipq60xx-nor-build/releases/tag/25.12.16-15.24.47)
 
 #### ✨ 功能更新

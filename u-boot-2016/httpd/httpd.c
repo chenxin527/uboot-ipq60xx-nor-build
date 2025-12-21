@@ -524,7 +524,7 @@ void httpd_appcall(void){
 					} else {
 						printf("Data will be downloaded at 0x%X in RAM\n", WEBFAILSAFE_UPLOAD_RAM_ADDRESS);
 					}
-					memset((void *)webfailsafe_data_pointer, 0xFF, WEBFAILSAFE_UPLOAD_PADDING_SIZE_IN_BYTES);
+					memset((void *)webfailsafe_data_pointer, 0, WEBFAILSAFE_UPLOAD_PADDING_SIZE_IN_BYTES);
 
 					if(httpd_findandstore_firstchunk()){
 						data_start_found = 1;
@@ -624,8 +624,9 @@ void httpd_appcall(void){
 
 					// if we have collected all data
 					if(hs->upload >= hs->upload_total + strlen(boundary_value) + 6) {
-						// 用 0xFF 填充内存中上传的文件后面的部分内存区域，防止干扰文件检查
-						memset((void *)webfailsafe_data_pointer, 0xFF, WEBFAILSAFE_UPLOAD_PADDING_SIZE_IN_BYTES);
+						// 用 0 填充内存中上传的文件后面的部分内存区域，防止干扰文件检查
+						ulong padding_start = (ulong)WEBFAILSAFE_UPLOAD_RAM_ADDRESS + (ulong)hs->upload_total;
+						memset((void *)padding_start, 0, WEBFAILSAFE_UPLOAD_PADDING_SIZE_IN_BYTES);
 						// 检查上传的文件是否正确
 						int fw_type = check_fw_type((void *)WEBFAILSAFE_UPLOAD_RAM_ADDRESS);
 						switch (webfailsafe_upgrade_type) {
