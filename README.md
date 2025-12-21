@@ -174,9 +174,9 @@ U-Boot 截图示例（[点击此处](./screenshots.md) 查看所有网页截图�
 | :---------- | :----------------------------- | :--------------------------------- |
 | 更新固件     | http://192.168.1.1             | 支持内核大小为 6MB 和 12MB 的固件更新 |
 | 更新 ART    | http://192.168.1.1/art.html    | ART 包含路由器网卡 MAC 及无线校准数据 |
-| 更新 CDT    | http://192.168.1.1/cdt.html    | CDT 文件不得小于 10KB（10240 Bytes） |
+| 更新 CDT    | http://192.168.1.1/cdt.html    | CDT 文件不得小于 10 KB（10240 Bytes） |
 | 更新 IMG    | http://192.168.1.1/img.html    | 支持刷写 eMMC 的 GPT 分区表或镜像，以及 SPI-NOR 的 MIBIB 分区表或镜像 |
-| 更新 U-Boot | http://192.168.1.1/uboot.html  | U-Boot 大小不能超过 640KB（655360 Bytes）|
+| 更新 U-Boot | http://192.168.1.1/uboot.html  | U-Boot 大小不能超过 640 KB（655360 Bytes）|
 | 启动 uImage | http://192.168.1.1/uimage.html | Initramfs uImage，可直接上传至内存并启动 |
 
 > [!NOTE]
@@ -189,7 +189,7 @@ U-Boot 截图示例（[点击此处](./screenshots.md) 查看所有网页截图�
 >
 > [点击此处](http://example.com) 获取 USB 9008 救砖教程及相关文件。
 >
-> [点击此处](http://example.com) 获取经测试可正常使用的 uImage。
+> [点击此处](https://github.com/chenxin527/OWRT-BUILDS/releases?q=UIMAGE-ONLY-IPQ60XX&expanded=true) 获取经测试可正常使用的 uImage。
 
 ### 固件说明
 
@@ -226,7 +226,7 @@ U-Boot 下不区分 LAN / WAN，任意网口均可进入 Web 刷机界面。
 
 连我 NN6000 V1 的 U-Boot 未测试过，因为没有机器。
 
-V1 和 V2 的 U-Boot 只是网口配置不同，其他都一样。若发现 V1 U-Boot 不能正常使用，可刷写 V2 的 U-Boot 测试，看看每个网口是否能正常进 Web。每换一个网口都要断电并重新按 RESET / WPS 键启动 HTTP Server，不要在 HTTP Server 已经启动的时候换网口，这样是进不了 Web 的。
+V1 和 V2 的 U-Boot 只是网口配置不同，其他都一样。若发现 V1 的 U-Boot 不能正常使用，可刷写 V2 的 U-Boot 测试，看看每个网口是否能正常进 Web。每换一个网口都要断电并重新按 RESET / WPS 键启动 HTTP Server，不要在 HTTP Server 已经启动的时候换网口，这样是进不了 Web 的。
 
 ### bootipq 失败后执行 httpd 出错
 

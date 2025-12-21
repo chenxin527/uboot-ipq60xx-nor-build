@@ -243,29 +243,19 @@ static int httpd_findandstore_firstchunk(void){
 				// ART
 				}
 				else if(webfailsafe_upgrade_type == WEBFAILSAFE_UPGRADE_TYPE_ART){
-					if(strcmp(getenv("machid"), "8030202") == 0){
-						//For JDCloud AX6600 Athena ART 512 KiB
-						art_size = WEBFAILSAFE_UPLOAD_ART_BIG_SIZE_IN_BYTES;
-
-					} else if(strcmp(getenv("machid"), "8030203") == 0){
-						//For JDCloud ER1 ART 512 KiB
-						art_size = WEBFAILSAFE_UPLOAD_ART_BIG_SIZE_IN_BYTES;
-
-					} else {
-						art_size = WEBFAILSAFE_UPLOAD_ART_SIZE_IN_BYTES;
-					}
+#if defined(CONFIG_TARGET_IPQ6018_JDCLOUD_RE_CS_02) || \
+    defined(CONFIG_TARGET_IPQ6018_JDCLOUD_RE_CS_07)
+					// For JDCloud AX6600 (Athena) and JDCloud ER1, ART is 512 KiB
+					art_size = WEBFAILSAFE_UPLOAD_ART_BIG_SIZE_IN_BYTES;
+#else
+					art_size = WEBFAILSAFE_UPLOAD_ART_SIZE_IN_BYTES;
+#endif
 
 					if (hs->upload_total > art_size){
 						printf("## Error: wrong file size, should be less than or equal to: %d bytes!\n", art_size);
 						webfailsafe_upload_failed = 1;
 						file_too_big = 1;
 					}
-
-				// firmware can't exceed: (FLASH_SIZE -  WEBFAILSAFE_UPLOAD_LIMITED_AREA_IN_BYTES)
-				// } else if(hs->upload_total > (info->size - WEBFAILSAFE_UPLOAD_LIMITED_AREA_IN_BYTES)){
-
-				// 	printf("## Error: file too big!\n");
-				// 	webfailsafe_upload_failed = 1;
 
 				// CDT
 				}
@@ -642,7 +632,7 @@ void httpd_appcall(void){
 							case WEBFAILSAFE_UPGRADE_TYPE_FIRMWARE:
 								if (fw_type != FW_TYPE_FACTORY_KERNEL6M &&
 									fw_type != FW_TYPE_FACTORY_KERNEL12M &&
-									fw_type != FW_TYPE_QSDK
+									fw_type != FW_TYPE_JDCLOUD
 								) {
 									printf("\n\n* The upload file is NOT supported FIRMWARE!! *\n\n");
 									print_fw_type(fw_type);

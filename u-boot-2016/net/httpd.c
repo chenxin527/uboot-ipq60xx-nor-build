@@ -111,17 +111,16 @@ int do_http_upgrade(const ulong size, const int upgrade_type) {
 
 	// include/gl_api.h
 	// WEBFAILSAFE_UPLOAD_RAM_ADDRESS = 0x50000000 为了可以上传更大的固件，将上传地址从 0x44000000 改为 0x50000000 避免内存 crash 重启
-	// FW_TYPE_NOR               0 这个是 SPI-NOR 的镜像
-	// FW_TYPE_EMMC	             1 这个是 eMMC 的 GPT 分区表或镜像，只要开头有GPT信息即可
-	// FW_TYPE_QSDK	             2 这个是官方原厂固件
-	// FW_TYPE_UBI	             3 这个是 UBI 固件，eMMC 没有 UBI 固件
-	// FW_TYPE_CDT               4 这个是 CDT 文件
-	// FW_TYPE_ELF               5 这个是 ELF 文件 (除了 U-Boot 外, SBL1, QSEE, RPM, DEVCFG 也是 ELF 文件)
-	// FW_TYPE_FACTORY_KERNEL6M	 6 这个是 Factory 格式的固件 (Kernel 大小: 6MB)
-	// FW_TYPE_FACTORY_KERNEL12M 7 这个是 Factory 格式的固件 (Kernel 大小: 12MB)
-	// FW_TYPE_FIT               8 这个是 FIT Image，包括 Factory Image 和 FIT uImage
-	// FW_TYPE_MIBIB             9 这个是 SPI-NOR 的 MIBIB 分区表
-	// FW_TYPE_SYSUPGRADE       10 这个是 Sysupgrade 格式的固件
+	// FW_TYPE_NOR                这个是 SPI-NOR 的镜像
+	// FW_TYPE_EMMC	              这个是 eMMC 的 GPT 分区表或镜像，只要开头有GPT信息即可
+	// FW_TYPE_JDCLOUD	          这个是 JDCloud 官方原厂固件
+	// FW_TYPE_UBI	              这个是 UBI 固件，eMMC 没有 UBI 固件
+	// FW_TYPE_CDT                这个是 CDT 文件
+	// FW_TYPE_ELF                这个是 ELF 文件 (除了 U-Boot 外, SBL1, QSEE, RPM, DEVCFG 也是 ELF 文件)
+	// FW_TYPE_FACTORY_KERNEL6M	  这个是 Factory 格式的固件 (Kernel 大小: 6MB)
+	// FW_TYPE_FACTORY_KERNEL12M  这个是 Factory 格式的固件 (Kernel 大小: 12MB)
+	// FW_TYPE_FIT                这个是 FIT Image，包括 Factory Image 和 FIT uImage
+	// FW_TYPE_MIBIB              这个是 SPI-NOR 的 MIBIB 分区表
 
 	switch (upgrade_type) {
 		case WEBFAILSAFE_UPGRADE_TYPE_FIRMWARE:
@@ -168,8 +167,8 @@ int do_http_upgrade(const ulong size, const int upgrade_type) {
 						(unsigned long int)(WEBFAILSAFE_UPLOAD_RAM_ADDRESS+0xA8),
 						(unsigned long int)WEBFAILSAFE_UPLOAD_RAM_ADDRESS,
 						(unsigned long int)WEBFAILSAFE_UPLOAD_RAM_ADDRESS);
-				} else if (fw_type == FW_TYPE_QSDK) {
-					printf("\n\n*******************************\n* Original FIRMWARE UPGRADING *\n*   DO NOT POWER OFF DEVICE!  *\n*******************************\n\n");
+				} else if (fw_type == FW_TYPE_JDCLOUD) {
+					printf("\n\n*******************************\n* ORIGINAL FIRMWARE UPGRADING *\n*   DO NOT POWER OFF DEVICE!  *\n*******************************\n\n");
 					sprintf(buf,
 						"mmc dev 0 && imxtract 0x%lx hlos-0cc33b23252699d495d79a843032498bfa593aba && flash 0:HLOS $fileaddr $filesize && imxtract 0x%lx rootfs-f3c50b484767661151cfb641e2622703e45020fe && flash rootfs $fileaddr $filesize && imxtract 0x%lx wififw-45b62ade000c18bfeeb23ae30e5a6811eac05e2f && flash 0:WIFIFW $fileaddr $filesize && flasherase rootfs_data && "
 						"sf probe 0 && sf read 0x%lx 0xd0000 0x150 && mw.b 0x%lx 0x00 0x1 && mw.b 0x%lx 0x00 0x1 && mw.b 0x%lx 0x00 0x1 && flashupdate 0:BOOTCONFIG 0x%lx 0x150 && flashupdate 0:BOOTCONFIG1 0x%lx 0x150",

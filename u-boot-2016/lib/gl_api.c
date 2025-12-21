@@ -271,62 +271,52 @@ int check_config()
 
 // 只检查文件的开头几个特殊 Magic Num
 int check_fw_type(void *address) {
-	u32 *sign_flas         = (u32 *)(address + 0x5c);
-	u16 *sign_55aa         = (u16 *)(address + 0x1fe);
-	u32 *sign_doodfeed     = (u32 *)(address);
-	u32 *sign_ubi          = (u32 *)(address);
-	u32 *sign_cdt          = (u32 *)(address);
-	u32 *sign_elf          = (u32 *)(address);
-	u32 *sign_kernel6m     = (u32 *)(address + 0x600000);
-	u32 *sign_kernel12m    = (u32 *)(address + 0xc00000);
-	u64 *sign_mibib_only   = (u64 *)(address);
-	u64 *sign_mibib_in_nor = (u64 *)(address + 0xc0000);
-	u64 *sign_sysupgrade   = (u64 *)(address);
+	u32 *header_magic1 = (u32 *)(address);
+	u32 *header_magic2 = (u32 *)(address + 0x4);
 
-	if (*sign_flas == 0x73616c46)
-		return FW_TYPE_QSDK;
-	else if (*sign_ubi == 0x23494255)
-		return FW_TYPE_UBI;
-	else if (*sign_doodfeed == 0xedfe0dd0 && *sign_kernel6m == 0x73717368)
-		return FW_TYPE_FACTORY_KERNEL6M;
-	else if (*sign_doodfeed == 0xedfe0dd0 && *sign_kernel12m == 0x73717368)
-		return FW_TYPE_FACTORY_KERNEL12M;
-	else if (*sign_doodfeed == 0xedfe0dd0)
-		return FW_TYPE_FIT;
-	else if (*sign_55aa == 0xaa55)
-		return FW_TYPE_EMMC;
-	else if (*sign_cdt == 0x00544443)
-		return FW_TYPE_CDT;
-	else if (*sign_mibib_only == 0xcd7f127afe569fac)
-		return FW_TYPE_MIBIB;
-	else if (*sign_elf == 0x464c457f && *sign_mibib_in_nor == 0xcd7f127afe569fac)
-		return FW_TYPE_NOR;
-	else if (*sign_elf == 0x464c457f)
-		return FW_TYPE_ELF;
-	else
-		return FW_TYPE_UNKNOWN;
+	switch (*header_magic1) {
+		case HEADER_MAGIC_CDT:
+			return FW_TYPE_CDT;
+		case HEADER_MAGIC_ELF:
+			if (*((u32 *)(address + 0xc0000)) == HEADER_MAGIC_MBN1 &&
+				*((u32 *)(address + 0xc0004)) == HEADER_MAGIC_MBN2
+			)
+				return FW_TYPE_NOR;
+			else
+				return FW_TYPE_ELF;
+		case HEADER_MAGIC_FIT:
+			if (*((u32 *)(address + 0x5C)) == HEADER_MAGIC_JDCLOUD)
+				return FW_TYPE_JDCLOUD;
+			else if (*((u32 *)(address + 0x600000)) == HEADER_MAGIC_SQUASHFS)
+				return FW_TYPE_FACTORY_KERNEL6M;
+			else if (*((u32 *)(address + 0xC00000)) == HEADER_MAGIC_SQUASHFS)
+				return FW_TYPE_FACTORY_KERNEL12M;
+			else
+				return FW_TYPE_FIT;
+		case HEADER_MAGIC_MBN1:
+			if (*header_magic2 == HEADER_MAGIC_MBN2)
+				return FW_TYPE_MIBIB;
+		case HEADER_MAGIC_UBI:
+			return FW_TYPE_UBI;
+		default:
+			if (*((u16 *)(address + 0x1FE)) == HEADER_MAGIC_EMMC)
+				return FW_TYPE_EMMC;
+			else
+				return FW_TYPE_UNKNOWN;
+	}
 }
 
 void print_fw_type(int fw_type) {
 	printf("* The upload file type: ");
 	switch (fw_type) {
-		case FW_TYPE_NOR:
-			printf("SPI-NOR IMGAGE *");
-			break;
-		case FW_TYPE_EMMC:
-			printf("EMMC IMAGE *");
-			break;
-		case FW_TYPE_QSDK:
-			printf("QSDK FIRMWARE *");
-			break;
-		case FW_TYPE_UBI:
-			printf("UBI FIRMWARE *");
-			break;
 		case FW_TYPE_CDT:
 			printf("CDT *");
 			break;
 		case FW_TYPE_ELF:
 			printf("ELF *");
+			break;
+		case FW_TYPE_EMMC:
+			printf("EMMC IMAGE *");
 			break;
 		case FW_TYPE_FACTORY_KERNEL6M:
 			printf("FACTORY FIRMWARE (KERNEL SIZE: 6MB) *");
@@ -340,72 +330,18 @@ void print_fw_type(int fw_type) {
 		case FW_TYPE_MIBIB:
 			printf("MIBIB *");
 			break;
+		case FW_TYPE_NOR:
+			printf("SPI-NOR IMGAGE *");
+			break;
+		case FW_TYPE_JDCLOUD:
+			printf("JDCLOUD OFFICIAL FIRMWARE *");
+			break;
+		case FW_TYPE_UBI:
+			printf("UBI FIRMWARE *");
+			break;
 		case FW_TYPE_UNKNOWN:
 		default:
 			printf("UNKNOWN *");
 	}
 	return;
 }
-/*
-
-int auto_update_flags = 0;
-
-int check_network(int tryCount)
-{
-	if (tryCount <= 0) {
-		return 1;
-	}
-
-	while (tryCount--) {
-		if (run_command("ping 192.168.1.2", 0) == 0) {
-			auto_update_flags = 1;
-			break;
-		}
-		udelay (1000000);
-	}
-
-	if (auto_update_flags) {
-		return 0;
-	} else {
-		return 1;
-	}
-}
-
-int auto_update_by_tftp()
-{
-	int ret = -1;
-	char buf[128] = {0};
-	const char *file_sz_str;
-	unsigned long file_size;
-
-	if (check_network(2) != 0) {
-		//printf("host no alive.\n");
-		return -1;
-	}
-
-	if (run_command("tftpboot 0x44000000 openwrt-gl-mv1000.bin", 0) == 0) {
-		file_sz_str = getenv("filesize");
-		file_size = simple_strtoul(file_sz_str, NULL, 16);
-		if(check_fw_type((void *)0x44000000)==FW_TYPE_NOR){
-		printf("\n\n****************************\n*    FIRMWARE UPGRADING    *\n* DO NOT POWER OFF DEVICE! *\n****************************\n\n");
-		sprintf(buf,
-				"sf probe && sf update 0x%lx 0x%lx 0x%lx",
-				(unsigned long int)0x44000000,
-				(unsigned long int)WEBFAILSAFE_UPLOAD_FW_ADDRESS,
-				(unsigned long int)file_size);
-		}else if(check_fw_type((void *)0x44000000)==FW_TYPE_EMMC){
-			printf("\n\n****************************\n*    FIRMWARE UPGRADING    *\n* DO NOT POWER OFF DEVICE! *\n****************************\n\n");
-			sprintf(buf,
-					"mmc dev 0 && mmc erase 0 0x109800 && mmc write 0x%lx 0x%lx 0x%lx",
-					(unsigned long int)0x44000000,
-					(unsigned long int)0x0,
-					(unsigned long int)(file_size/512+1));
-		}else{
-			return(-1);
-		}
-		return(run_command(buf, 0));
-	}
-	return ret;
-}
-
-*/
