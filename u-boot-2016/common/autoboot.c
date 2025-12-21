@@ -446,14 +446,7 @@ void autoboot_command(const char *s)
 #ifdef CONFIG_WINDOWS_UPGRADE_SUPPORT
 		gl_probe_upgrade = 0;
 #endif
-		/*
-		if (!check_test() && !check_config()) {
-			tmp = getenv("tftp_upgrade");
-			tftp_upgrade_en = tmp ? (int)simple_strtol(tmp, NULL, 10) : 0;
-			if(tftp_upgrade_en==1)
-				auto_update_by_tftp();
-		}
-		*/
+
 #if defined(CONFIG_AUTOBOOT_KEYED) && !defined(CONFIG_AUTOBOOT_KEYED_CTRLC)
 		int prev = disable_ctrlc(1);	/* disable Control C checking */
 #endif
