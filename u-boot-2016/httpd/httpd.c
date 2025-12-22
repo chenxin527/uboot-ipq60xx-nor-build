@@ -630,7 +630,8 @@ void httpd_appcall(void){
 							case WEBFAILSAFE_UPGRADE_TYPE_FIRMWARE:
 								if (fw_type != FW_TYPE_FACTORY_KERNEL6M &&
 									fw_type != FW_TYPE_FACTORY_KERNEL12M &&
-									fw_type != FW_TYPE_JDCLOUD
+									fw_type != FW_TYPE_JDCLOUD &&
+									fw_type != FW_TYPE_SYSUPGRADE
 								) {
 									printf("\n\n* The upload file is NOT supported FIRMWARE!! *\n\n");
 									print_fw_type(fw_type);

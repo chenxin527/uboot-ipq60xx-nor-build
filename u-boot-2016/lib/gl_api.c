@@ -191,6 +191,10 @@ int check_fw_type(void *address) {
 			if (*header_magic2 == HEADER_MAGIC_MBN2)
 				return FW_TYPE_MIBIB;
 			return FW_TYPE_UNKNOWN;
+		case HEADER_MAGIC_SYSUPGRADE1:
+			if (*header_magic2 == HEADER_MAGIC_SYSUPGRADE2)
+				return FW_TYPE_SYSUPGRADE;
+			return FW_TYPE_UNKNOWN;
 		case HEADER_MAGIC_UBI:
 			return FW_TYPE_UBI;
 		default:
@@ -230,6 +234,9 @@ void print_fw_type(int fw_type) {
 			break;
 		case FW_TYPE_JDCLOUD:
 			printf("JDCLOUD OFFICIAL FIRMWARE *");
+			break;
+		case FW_TYPE_SYSUPGRADE:
+			printf("SYSUPGRADE FIRMWARE *");
 			break;
 		case FW_TYPE_UBI:
 			printf("UBI FIRMWARE *");

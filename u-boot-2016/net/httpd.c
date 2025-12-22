@@ -154,6 +154,13 @@ int do_http_upgrade(const ulong size, const int upgrade_type) {
 						(unsigned long int)WEBFAILSAFE_UPLOAD_RAM_ADDRESS,
 						(unsigned long int)WEBFAILSAFE_UPLOAD_RAM_ADDRESS,
 						(unsigned long int)WEBFAILSAFE_UPLOAD_RAM_ADDRESS);
+				} else if (fw_type == FW_TYPE_SYSUPGRADE) {
+					printf("\n\n*********************************\n* SYSUPGRADE FIRMWARE UPGRADING *\n*   DO NOT POWER OFF DEVICE!    *\n*********************************\n\n");
+					sprintf(buf,
+						"mmc dev 0 && untar 0x%lx 0x%lx && flash 0:HLOS $kernel_addr $kernel_size && flash rootfs $rootfs_addr $rootfs_size && "
+						"bootconfig set primary",
+						(unsigned long int)WEBFAILSAFE_UPLOAD_RAM_ADDRESS,
+						(unsigned long int)size);
 				} else {
 					printf("\n\n* The upload file is NOT supported FIRMWARE!! *\n\n");
 					return (-1);
