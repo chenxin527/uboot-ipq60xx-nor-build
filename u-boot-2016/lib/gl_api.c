@@ -190,6 +190,7 @@ int check_fw_type(void *address) {
 		case HEADER_MAGIC_MBN1:
 			if (*header_magic2 == HEADER_MAGIC_MBN2)
 				return FW_TYPE_MIBIB;
+			return FW_TYPE_UNKNOWN;
 		case HEADER_MAGIC_UBI:
 			return FW_TYPE_UBI;
 		default:
