@@ -3,6 +3,16 @@
 #include <gl_api.h>
 #include <asm/gpio.h>
 #include <fdtdec.h>
+#include <part.h>
+#include <mmc.h>
+#include <sdhci.h>
+#include <cmd_untar.h>
+
+#ifndef CONFIG_SDHCI_SUPPORT
+extern qca_mmc mmc_host;
+#else
+extern struct sdhci_host mmc_host;
+#endif
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -248,17 +258,66 @@ void print_fw_type(int fw_type) {
 	return;
 }
 
+int image_greater_than_partition(char *part_name, char *file_name, ulong file_size_in_bytes) {
+    block_dev_desc_t *blk_dev;
+    disk_partition_t disk_info = {0};
+    ulong part_size_in_blocks = 0;
+    ulong file_size_in_blocks = 0;
+
+    blk_dev = mmc_get_dev(mmc_host.dev_num);
+    if (blk_dev == NULL)
+        return 1;
+    if (get_partition_info_efi_by_name(blk_dev, part_name, &disk_info)) {
+        printf("\n\nPartition %s not found!", part_name);
+        return 1;
+    }
+    part_size_in_blocks = (ulong)disk_info.size;
+
+    if (disk_info.blksz) {
+        file_size_in_blocks = file_size_in_bytes / disk_info.blksz;
+        ulong adj_size = file_size_in_bytes % disk_info.blksz;
+        if (adj_size)
+            file_size_in_blocks += 1;
+    }
+
+    if (file_size_in_blocks > part_size_in_blocks) {
+        printf("\n\n* Error: image %s size (%lu bytes) > partition %s size (%lu bytes)! *",
+			   file_name, file_size_in_bytes, part_name, part_size_in_blocks * disk_info.blksz);
+        return 1;
+    }
+
+    return 0;
+}
+
 int check_fw_compat(const int upgrade_type, const int fw_type, const ulong file_size_in_bytes) {
 	switch (upgrade_type) {
 		case WEBFAILSAFE_UPGRADE_TYPE_FIRMWARE:
-			if (fw_type != FW_TYPE_FACTORY_KERNEL6M &&
-				fw_type != FW_TYPE_FACTORY_KERNEL12M &&
-				fw_type != FW_TYPE_JDCLOUD &&
-				fw_type != FW_TYPE_SYSUPGRADE
-			) {
-				printf("\n\n* The upload file is NOT supported FIRMWARE!! *\n\n");
-				print_fw_type(fw_type);
-				return 1;
+			switch (fw_type) {
+				case FW_TYPE_FACTORY_KERNEL6M:
+					return (image_greater_than_partition("0:HLOS", "kernel", 6*1024*1024) ||
+							image_greater_than_partition("rootfs", "rootfs", file_size_in_bytes - 6*1024*1024));
+				case FW_TYPE_FACTORY_KERNEL12M:
+					return (image_greater_than_partition("0:HLOS", "kernel", 12*1024*1024) ||
+							image_greater_than_partition("rootfs", "rootfs", file_size_in_bytes - 12*1024*1024));
+				case FW_TYPE_SYSUPGRADE: {
+					const void *kernel_addr, *rootfs_addr;
+					size_t kernel_size, rootfs_size;
+					if (parse_tar_image((void *)WEBFAILSAFE_UPLOAD_RAM_ADDRESS, (size_t)file_size_in_bytes,
+										&kernel_addr, &kernel_size,
+										&rootfs_addr, &rootfs_size)
+					) {
+						printf("\n\n* The upload file is NOT valid SYSUPGRADE IMAGE!! *");
+						return 1;
+					}
+					return (image_greater_than_partition("0:HLOS", "kernel", kernel_size) ||
+							image_greater_than_partition("rootfs", "rootfs", rootfs_size));
+				}
+				case FW_TYPE_JDCLOUD:
+					break;
+				default:
+					printf("\n\n* The upload file is NOT supported FIRMWARE!! *\n\n");
+					print_fw_type(fw_type);
+					return 1;
 			}
 			break;
 		case WEBFAILSAFE_UPGRADE_TYPE_UBOOT:

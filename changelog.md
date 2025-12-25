@@ -7,6 +7,7 @@
 - 添加 bootconfig 命令，用于切换启动分区
 - 添加 untar 命令，用于解析 sysupgrade tar image
 - 支持刷写 sysupgrade 格式的固件
+- 固件上传完成后检查其 kernel 与 rootfs 是否超过相应分区大小
 
 #### 📢 其他更新
 
